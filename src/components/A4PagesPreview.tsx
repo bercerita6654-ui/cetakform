@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Printer, ArrowLeft, Layers, FileText } from 'lucide-react';
+import { Printer, ArrowLeft, Layers } from 'lucide-react';
 import { DayData, DocumentConfig } from '../types';
 
 interface A4PagesPreviewProps {
@@ -45,7 +45,9 @@ export const A4PagesPreview: React.FC<A4PagesPreviewProps> = ({
   }, [daysData]);
 
   const currentPeriod = `Periode: ${config.month.toUpperCase()} ${config.year}`;
-  const expedisiItems = config.expedisiList || ['J&T', 'JNE', 'SPX', 'ID'];
+  const expedisiItems = config.expedisiList && config.expedisiList.length > 0
+    ? config.expedisiList
+    : ['J&T', 'JNE', 'SPX', 'ID'];
 
   return (
     <div className="w-full max-w-5xl mx-auto px-4 py-4">
@@ -135,17 +137,21 @@ export const A4PagesPreview: React.FC<A4PagesPreviewProps> = ({
                 <table className="w-full border-collapse border border-black text-[11px]">
                   <thead>
                     <tr className="bg-gray-50 font-bold text-center uppercase tracking-wider text-black">
-                      <th className="border border-black p-2 w-20">Hari</th>
-                      <th className="border border-black p-2 w-28">Tanggal</th>
-                      <th className="border border-black p-2 w-24">Waktu</th>
-                      <th className="border border-black p-2 w-36">{config.senderTitle}</th>
-                      <th className="border border-black p-2 w-36">{config.receiverTitle}</th>
-                      <th className="border border-black p-2 w-36">
-                        <div>Ekspedisi</div>
-                        <div className="text-[9px] font-normal text-gray-600 tracking-tight">
-                          J&T • JNE • SPX • ID
-                        </div>
+                      <th rowSpan={2} className="border border-black p-2 w-16 align-middle">Hari</th>
+                      <th rowSpan={2} className="border border-black p-2 w-24 align-middle">Tanggal</th>
+                      <th rowSpan={2} className="border border-black p-2 w-20 align-middle">Waktu</th>
+                      <th rowSpan={2} className="border border-black p-2 w-32 align-middle">{config.senderTitle}</th>
+                      <th rowSpan={2} className="border border-black p-2 w-32 align-middle">{config.receiverTitle}</th>
+                      <th colSpan={expedisiItems.length} className="border border-black p-1.5 bg-gray-200 text-black font-extrabold">
+                        EKSPEDISI
                       </th>
+                    </tr>
+                    <tr className="bg-gray-50 font-bold text-center uppercase tracking-wider text-black">
+                      {expedisiItems.map(c => (
+                        <th key={c} className="border border-black p-1 w-11 text-[10px]">
+                          {c}
+                        </th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>
@@ -163,29 +169,32 @@ export const A4PagesPreview: React.FC<A4PagesPreviewProps> = ({
                               {day.tanggal}
                             </td>
                             <td
-                              className="border border-black p-2 text-center font-black tracking-[0.3em] bg-red-500 text-white"
+                              className="border border-black p-2 text-center font-black tracking-[0.2em] bg-red-500 text-white"
                               style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
                             >
                               {day.keteranganLibur || 'LIBUR'}
                             </td>
                             <td
-                              className="border border-black p-2 text-center font-black tracking-[0.3em] bg-red-500 text-white"
+                              className="border border-black p-2 text-center font-black tracking-[0.2em] bg-red-500 text-white"
                               style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
                             >
                               {day.keteranganLibur || 'LIBUR'}
                             </td>
                             <td
-                              className="border border-black p-2 text-center font-black tracking-[0.3em] bg-red-500 text-white"
+                              className="border border-black p-2 text-center font-black tracking-[0.2em] bg-red-500 text-white"
                               style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
                             >
                               {day.keteranganLibur || 'LIBUR'}
                             </td>
-                            <td
-                              className="border border-black p-2 text-center font-black tracking-[0.3em] bg-red-500 text-white"
-                              style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
-                            >
-                              {day.keteranganLibur || 'LIBUR'}
-                            </td>
+                            {expedisiItems.map(c => (
+                              <td
+                                key={c}
+                                className="border border-black p-1 text-center font-bold text-[9px] bg-red-500 text-white"
+                                style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
+                              >
+                                LIBUR
+                              </td>
+                            ))}
                           </tr>
                         );
                       }
@@ -208,27 +217,20 @@ export const A4PagesPreview: React.FC<A4PagesPreviewProps> = ({
                               </td>
                             </>
                           )}
-                          <td className="border border-black p-2 text-center h-11 align-middle font-semibold text-[#111827]">
+                          <td className="border border-black p-1.5 text-center h-10 align-middle font-semibold text-[#111827]">
                             {slot.waktu}
                           </td>
-                          <td className="border border-black p-2 h-11"></td>
-                          <td className="border border-black p-2 h-11"></td>
-                          {/* Expedisi Box */}
-                          <td className="border border-black p-1.5 h-11 align-middle">
-                            <div className="grid grid-cols-2 gap-1 text-[10px]">
-                              {expedisiItems.map(c => {
-                                const isChecked = slot.expedisi?.includes(c);
-                                return (
-                                  <div key={c} className="flex items-center gap-1 font-semibold">
-                                    <span className="w-3 h-3 border border-black inline-flex items-center justify-center text-[8px] font-bold">
-                                      {isChecked ? '✓' : ''}
-                                    </span>
-                                    <span>{c}</span>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </td>
+                          <td className="border border-black p-1.5 h-10"></td>
+                          <td className="border border-black p-1.5 h-10"></td>
+                          {/* Individual Courier Columns */}
+                          {expedisiItems.map(courier => (
+                            <td
+                              key={courier}
+                              className="border border-black p-1 text-center font-bold text-xs h-10 align-middle w-11"
+                            >
+                              {slot.expedisiQty?.[courier] || ''}
+                            </td>
+                          ))}
                         </tr>
                       ));
                     })}

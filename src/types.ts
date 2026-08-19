@@ -5,6 +5,7 @@ export interface TimeSlot {
   menyerahkan?: string;
   menerima?: string;
   expedisi?: string[]; // e.g. ['J&T', 'JNE', 'SPX', 'ID']
+  expedisiQty?: Record<string, string>; // e.g. { 'J&T': '12', 'JNE': '5' }
 }
 
 export interface DayData {

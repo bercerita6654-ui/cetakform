@@ -9,7 +9,21 @@ export function handlePrintToNewTab(
     return;
   }
 
-  const tableContent = tableElement.outerHTML;
+  // Clone table and replace inputs with their values for print fidelity
+  const cloned = tableElement.cloneNode(true) as HTMLElement;
+  const originalInputs = tableElement.querySelectorAll('input');
+  const clonedInputs = cloned.querySelectorAll('input');
+  originalInputs.forEach((origInput, idx) => {
+    const val = (origInput as HTMLInputElement).value;
+    if (clonedInputs[idx]) {
+      const span = document.createElement('span');
+      span.className = 'font-bold text-xs inline-block text-center w-full';
+      span.textContent = val || '';
+      clonedInputs[idx].parentNode?.replaceChild(span, clonedInputs[idx]);
+    }
+  });
+
+  const tableContent = cloned.outerHTML;
   const currentTitle = `${config.title} ${config.month.toUpperCase()} ${config.year}`;
 
   try {
@@ -41,7 +55,7 @@ export function handlePrintToNewTab(
                   width: 210mm;
                   min-height: 297mm;
                   margin: 0 auto 2rem auto;
-                  padding: 10mm 12mm;
+                  padding: 8mm 10mm;
                   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
                   box-sizing: border-box;
                   position: relative;
@@ -97,7 +111,7 @@ export function handlePrintToNewTab(
                       </button>
                   </div>
                   <p class="text-slate-300 mt-2 text-xs text-center">
-                    Dokumen telah dipaginasi otomatis ke lembaran format <b>A4 Portrait</b> termasuk kolom <b>Ekspedisi (J&T, JNE, SPX, ID)</b>.
+                    Dokumen dipaginasi otomatis ke <b>A4 Portrait</b> dengan kolom <b>EKSPEDISI (J&T, JNE, SPX, ID)</b>.
                   </p>
               </div>
           </div>
@@ -110,7 +124,7 @@ export function handlePrintToNewTab(
           
           <script>
               window.onload = function() {
-                  const MAX_TABLE_HEIGHT = 960; 
+                  const MAX_TABLE_HEIGHT = 980; 
                   
                   const sourceTable = document.querySelector('#source-table table');
                   if (!sourceTable) return;
@@ -156,7 +170,7 @@ export function handlePrintToNewTab(
               
               function createTable(page, theadHTML) {
                   const table = document.createElement('table');
-                  table.className = 'w-full border-collapse border border-black text-xs sm:text-sm';
+                  table.className = 'w-full border-collapse border border-black text-xs';
                   table.innerHTML = theadHTML;
                   page.appendChild(table);
                   return table;
@@ -175,29 +189,30 @@ export function handlePrintToNewTab(
 
 // Export data to CSV
 export function exportToCSV(days: DayData[], config: DocumentConfig) {
-  const expedisiHeader = config.expedisiList.join(' / ');
+  const couriers = config.expedisiList && config.expedisiList.length > 0
+    ? config.expedisiList
+    : ['J&T', 'JNE', 'SPX', 'ID'];
+
   const rows: string[][] = [
     [`PENYERAHAN INVOICE ${config.month.toUpperCase()} ${config.year}`],
     [config.companyName ? `Perusahaan: ${config.companyName}` : ''],
-    ['Hari', 'Tanggal', 'Waktu', 'TTD Yang Menyerahkan', 'TTD Yang Menerima', `Ekspedisi (${expedisiHeader})`],
+    ['Hari', 'Tanggal', 'Waktu', 'TTD Yang Menyerahkan', 'TTD Yang Menerima', ...couriers],
   ];
 
   days.forEach(day => {
     if (day.isLibur || day.isMinggu) {
-      rows.push([day.hari, day.tanggal, 'LIBUR', 'LIBUR', 'LIBUR', 'LIBUR']);
+      const liburCols = couriers.map(() => 'LIBUR');
+      rows.push([day.hari, day.tanggal, 'LIBUR', 'LIBUR', 'LIBUR', ...liburCols]);
     } else {
       day.slots.forEach((slot, slotIdx) => {
-        const checkedCouriers = (slot.expedisi && slot.expedisi.length > 0)
-          ? slot.expedisi.join(', ')
-          : '-';
-
+        const courierValues = couriers.map(c => slot.expedisiQty?.[c] || '');
         rows.push([
           slotIdx === 0 ? day.hari : '',
           slotIdx === 0 ? day.tanggal : '',
           slot.waktu,
           slot.menyerahkan || '',
           slot.menerima || '',
-          checkedCouriers
+          ...courierValues
         ]);
       });
     }

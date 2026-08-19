@@ -176,8 +176,8 @@ export default function App() {
     );
   };
 
-  // Toggle courier checked state on a slot
-  const handleToggleExpedisi = (dayId: string, slotId: string, courier: string) => {
+  // Update courier quantity (angka) on a slot
+  const handleUpdateExpedisiQty = (dayId: string, slotId: string, courier: string, qty: string) => {
     setDaysData(prev =>
       prev.map(day => {
         if (day.id === dayId) {
@@ -185,12 +185,13 @@ export default function App() {
             ...day,
             slots: day.slots.map(s => {
               if (s.id === slotId) {
-                const current = s.expedisi || [];
-                const isSelected = current.includes(courier);
-                const updated = isSelected
-                  ? current.filter(c => c !== courier)
-                  : [...current, courier];
-                return { ...s, expedisi: updated };
+                return {
+                  ...s,
+                  expedisiQty: {
+                    ...(s.expedisiQty || {}),
+                    [courier]: qty
+                  }
+                };
               }
               return s;
             })
@@ -323,7 +324,7 @@ export default function App() {
             onAddSlotToDay={handleAddSlotToDay}
             onRemoveSlotFromDay={handleRemoveSlotFromDay}
             onUpdateSlotTime={handleUpdateSlotTime}
-            onToggleExpedisi={handleToggleExpedisi}
+            onUpdateExpedisiQty={handleUpdateExpedisiQty}
             onMoveDay={handleMoveDay}
             onGenerateMonth={handleGenerateMonth}
             onAddToday={handleAddToday}
