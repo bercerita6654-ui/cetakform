@@ -1,0 +1,32 @@
+export interface TimeSlot {
+  id: string;
+  waktu: string;
+  catatan?: string;
+  menyerahkan?: string;
+  menerima?: string;
+}
+
+export interface DayData {
+  id: string;
+  hari: string;
+  tanggal: string; // e.g. "01 Juni 2026"
+  rawDate?: string; // YYYY-MM-DD
+  isMinggu: boolean;
+  isLibur: boolean;
+  keteranganLibur?: string;
+  slots: TimeSlot[];
+}
+
+export interface DocumentConfig {
+  title: string;
+  companyName: string;
+  department: string;
+  month: string;
+  year: number;
+  senderTitle: string;
+  receiverTitle: string;
+  defaultSlots: string[];
+  showCompanyHeader: boolean;
+  showFooterNotes: boolean;
+  footerNotes: string;
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Generator Tanda Terima Invoice",
+  "description": "Aplikasi pembuat dan pencetak dokumen tanda terima penyerahan invoice bulanan dan harian dengan format A4 siap cetak.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
