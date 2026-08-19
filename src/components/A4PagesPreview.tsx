@@ -22,7 +22,7 @@ export const A4PagesPreview: React.FC<A4PagesPreviewProps> = ({
     const result: DayData[][] = [];
     let currentPage: DayData[] = [];
     let currentSlotCount = 0;
-    const MAX_SLOTS_PER_PAGE = 26;
+    const MAX_SLOTS_PER_PAGE = 24;
 
     daysData.forEach((day) => {
       const daySlotsWeight = (day.isLibur || day.isMinggu) ? 1.5 : day.slots.length;
@@ -45,6 +45,7 @@ export const A4PagesPreview: React.FC<A4PagesPreviewProps> = ({
   }, [daysData]);
 
   const currentPeriod = `Periode: ${config.month.toUpperCase()} ${config.year}`;
+  const expedisiItems = config.expedisiList || ['J&T', 'JNE', 'SPX', 'ID'];
 
   return (
     <div className="w-full max-w-5xl mx-auto px-4 py-4">
@@ -136,9 +137,15 @@ export const A4PagesPreview: React.FC<A4PagesPreviewProps> = ({
                     <tr className="bg-gray-50 font-bold text-center uppercase tracking-wider text-black">
                       <th className="border border-black p-2 w-20">Hari</th>
                       <th className="border border-black p-2 w-28">Tanggal</th>
-                      <th className="border border-black p-2 w-28">Waktu</th>
-                      <th className="border border-black p-2 w-44">{config.senderTitle}</th>
-                      <th className="border border-black p-2 w-44">{config.receiverTitle}</th>
+                      <th className="border border-black p-2 w-24">Waktu</th>
+                      <th className="border border-black p-2 w-36">{config.senderTitle}</th>
+                      <th className="border border-black p-2 w-36">{config.receiverTitle}</th>
+                      <th className="border border-black p-2 w-36">
+                        <div>Ekspedisi</div>
+                        <div className="text-[9px] font-normal text-gray-600 tracking-tight">
+                          J&T • JNE • SPX • ID
+                        </div>
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -154,6 +161,12 @@ export const A4PagesPreview: React.FC<A4PagesPreviewProps> = ({
                             </td>
                             <td className="border border-black p-2 text-center align-middle text-red-600 font-medium">
                               {day.tanggal}
+                            </td>
+                            <td
+                              className="border border-black p-2 text-center font-black tracking-[0.3em] bg-red-500 text-white"
+                              style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
+                            >
+                              {day.keteranganLibur || 'LIBUR'}
                             </td>
                             <td
                               className="border border-black p-2 text-center font-black tracking-[0.3em] bg-red-500 text-white"
@@ -200,6 +213,22 @@ export const A4PagesPreview: React.FC<A4PagesPreviewProps> = ({
                           </td>
                           <td className="border border-black p-2 h-11"></td>
                           <td className="border border-black p-2 h-11"></td>
+                          {/* Expedisi Box */}
+                          <td className="border border-black p-1.5 h-11 align-middle">
+                            <div className="grid grid-cols-2 gap-1 text-[10px]">
+                              {expedisiItems.map(c => {
+                                const isChecked = slot.expedisi?.includes(c);
+                                return (
+                                  <div key={c} className="flex items-center gap-1 font-semibold">
+                                    <span className="w-3 h-3 border border-black inline-flex items-center justify-center text-[8px] font-bold">
+                                      {isChecked ? '✓' : ''}
+                                    </span>
+                                    <span>{c}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </td>
                         </tr>
                       ));
                     })}

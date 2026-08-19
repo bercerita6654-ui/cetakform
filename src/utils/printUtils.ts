@@ -15,7 +15,6 @@ export function handlePrintToNewTab(
   try {
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
-      // If popup blocked, fallback to normal print
       window.print();
       return;
     }
@@ -42,7 +41,7 @@ export function handlePrintToNewTab(
                   width: 210mm;
                   min-height: 297mm;
                   margin: 0 auto 2rem auto;
-                  padding: 12mm;
+                  padding: 10mm 12mm;
                   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
                   box-sizing: border-box;
                   position: relative;
@@ -62,7 +61,7 @@ export function handlePrintToNewTab(
               @media print {
                   @page {
                       size: A4 portrait;
-                      margin: 10mm 12mm 12mm 12mm;
+                      margin: 8mm 10mm 10mm 10mm;
                   }
                   body {
                       background-color: white !important;
@@ -98,7 +97,7 @@ export function handlePrintToNewTab(
                       </button>
                   </div>
                   <p class="text-slate-300 mt-2 text-xs text-center">
-                    Dokumen telah dipaginasi otomatis ke lembaran format <b>A4 Portrait</b> tanpa memotong baris per hari.
+                    Dokumen telah dipaginasi otomatis ke lembaran format <b>A4 Portrait</b> termasuk kolom <b>Ekspedisi (J&T, JNE, SPX, ID)</b>.
                   </p>
               </div>
           </div>
@@ -157,7 +156,7 @@ export function handlePrintToNewTab(
               
               function createTable(page, theadHTML) {
                   const table = document.createElement('table');
-                  table.className = 'w-full border-collapse border border-black text-sm';
+                  table.className = 'w-full border-collapse border border-black text-xs sm:text-sm';
                   table.innerHTML = theadHTML;
                   page.appendChild(table);
                   return table;
@@ -176,23 +175,29 @@ export function handlePrintToNewTab(
 
 // Export data to CSV
 export function exportToCSV(days: DayData[], config: DocumentConfig) {
+  const expedisiHeader = config.expedisiList.join(' / ');
   const rows: string[][] = [
     [`PENYERAHAN INVOICE ${config.month.toUpperCase()} ${config.year}`],
     [config.companyName ? `Perusahaan: ${config.companyName}` : ''],
-    ['Hari', 'Tanggal', 'Waktu', 'TTD Yang Menyerahkan', 'TTD Yang Menerima'],
+    ['Hari', 'Tanggal', 'Waktu', 'TTD Yang Menyerahkan', 'TTD Yang Menerima', `Ekspedisi (${expedisiHeader})`],
   ];
 
   days.forEach(day => {
     if (day.isLibur || day.isMinggu) {
-      rows.push([day.hari, day.tanggal, 'LIBUR', 'LIBUR', 'LIBUR']);
+      rows.push([day.hari, day.tanggal, 'LIBUR', 'LIBUR', 'LIBUR', 'LIBUR']);
     } else {
       day.slots.forEach((slot, slotIdx) => {
+        const checkedCouriers = (slot.expedisi && slot.expedisi.length > 0)
+          ? slot.expedisi.join(', ')
+          : '-';
+
         rows.push([
           slotIdx === 0 ? day.hari : '',
           slotIdx === 0 ? day.tanggal : '',
           slot.waktu,
           slot.menyerahkan || '',
-          slot.menerima || ''
+          slot.menerima || '',
+          checkedCouriers
         ]);
       });
     }

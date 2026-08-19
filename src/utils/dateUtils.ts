@@ -15,6 +15,8 @@ export const DEFAULT_TIME_SLOTS = [
   '14.00 - 15.00'
 ];
 
+export const DEFAULT_EXPEDISI = ['J&T', 'JNE', 'SPX', 'ID'];
+
 // Helper to create slots array
 export function createDefaultSlots(slotsList: string[] = DEFAULT_TIME_SLOTS, prefix: string): TimeSlot[] {
   return slotsList.map((slot, index) => ({
@@ -22,7 +24,8 @@ export function createDefaultSlots(slotsList: string[] = DEFAULT_TIME_SLOTS, pre
     waktu: slot,
     menyerahkan: '',
     menerima: '',
-    catatan: ''
+    catatan: '',
+    expedisi: []
   }));
 }
 
@@ -52,7 +55,7 @@ export function generateDayData(
       isMinggu: true,
       isLibur: true,
       keteranganLibur: 'LIBUR',
-      slots: [{ id: `${dayId}-slot-libur`, waktu: 'LIBUR' }]
+      slots: [{ id: `${dayId}-slot-libur`, waktu: 'LIBUR', expedisi: [] }]
     };
   }
 

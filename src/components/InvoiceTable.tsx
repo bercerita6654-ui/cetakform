@@ -20,6 +20,7 @@ interface InvoiceTableProps {
   onAddSlotToDay: (dayId: string) => void;
   onRemoveSlotFromDay: (dayId: string, slotId: string) => void;
   onUpdateSlotTime: (dayId: string, slotId: string, newTime: string) => void;
+  onToggleExpedisi: (dayId: string, slotId: string, courier: string) => void;
   onMoveDay: (index: number, direction: 'up' | 'down') => void;
   onGenerateMonth: () => void;
   onAddToday: () => void;
@@ -33,6 +34,7 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
   onAddSlotToDay,
   onRemoveSlotFromDay,
   onUpdateSlotTime,
+  onToggleExpedisi,
   onMoveDay,
   onGenerateMonth,
   onAddToday
@@ -53,6 +55,7 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
   };
 
   const periodString = `${config.month.toUpperCase()} ${config.year}`;
+  const expedisiItems = config.expedisiList || ['J&T', 'JNE', 'SPX', 'ID'];
 
   return (
     <div
@@ -85,7 +88,7 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
             {/* Document Title Header inside Table */}
             <tr>
               <th
-                colSpan={6}
+                colSpan={7}
                 className="border border-black p-3 text-center text-lg sm:text-xl font-bold bg-white text-black uppercase tracking-wider"
               >
                 {config.title} {periodString}
@@ -96,8 +99,14 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
               <th className="border border-black p-2 w-20 uppercase">Hari</th>
               <th className="border border-black p-2 w-32 uppercase">Tanggal</th>
               <th className="border border-black p-2 w-28 uppercase">Waktu</th>
-              <th className="border border-black p-2 w-48 uppercase">{config.senderTitle}</th>
-              <th className="border border-black p-2 w-48 uppercase">{config.receiverTitle}</th>
+              <th className="border border-black p-2 w-44 uppercase">{config.senderTitle}</th>
+              <th className="border border-black p-2 w-44 uppercase">{config.receiverTitle}</th>
+              <th className="border border-black p-2 w-44 uppercase">
+                <div className="font-bold text-xs sm:text-sm">EKSPEDISI</div>
+                <div className="text-[10px] font-normal text-gray-600 tracking-normal font-sans">
+                  J&T • JNE • SPX • ID
+                </div>
+              </th>
               <th className="border border-black p-2 w-16 print-hidden text-xs">Aksi</th>
             </tr>
           </thead>
@@ -106,7 +115,7 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
           {daysData.length === 0 ? (
             <tbody id="table-body">
               <tr>
-                <td colSpan={6} className="text-center p-12 text-gray-500 border border-black print-hidden bg-gray-50/50">
+                <td colSpan={7} className="text-center p-12 text-gray-500 border border-black print-hidden bg-gray-50/50">
                   <div className="max-w-md mx-auto flex flex-col items-center">
                     <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
                       <Sparkles className="w-6 h-6" />
@@ -149,7 +158,13 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                       <td className="border border-black p-2 text-center align-middle text-red-600 font-medium">
                         {day.tanggal}
                       </td>
-                      {/* 3 Red LIBUR Columns matching user's exact specification */}
+                      {/* 4 Red LIBUR Columns across all operational columns */}
+                      <td
+                        className="border border-black p-2 text-center font-bold tracking-widest text-white select-none"
+                        style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
+                      >
+                        {day.keteranganLibur || 'LIBUR'}
+                      </td>
                       <td
                         className="border border-black p-2 text-center font-bold tracking-widest text-white select-none"
                         style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
@@ -269,6 +284,39 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                           )}
                         </td>
 
+                        {/* Expedisi Column: J&T, JNE, SPX, ID */}
+                        <td className="border border-black p-1.5 align-middle h-12">
+                          <div className="grid grid-cols-2 gap-1">
+                            {expedisiItems.map((courier) => {
+                              const isChecked = slot.expedisi?.includes(courier);
+                              return (
+                                <button
+                                  key={courier}
+                                  type="button"
+                                  onClick={() => onToggleExpedisi(day.id, slot.id, courier)}
+                                  className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold border transition text-left cursor-pointer ${
+                                    isChecked
+                                      ? 'bg-blue-600 border-blue-700 text-white shadow-2xs'
+                                      : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-100'
+                                  }`}
+                                  title={`Pilih ${courier}`}
+                                >
+                                  <span
+                                    className={`w-3.5 h-3.5 rounded-xs flex items-center justify-center text-[9px] border font-mono ${
+                                      isChecked
+                                        ? 'bg-white text-blue-600 border-white'
+                                        : 'border-gray-400 bg-white text-transparent'
+                                    }`}
+                                  >
+                                    {isChecked ? '✓' : ' '}
+                                  </span>
+                                  <span className="truncate">{courier}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </td>
+
                         {/* Action Column on first slot with RowSpan */}
                         {slotIndex === 0 && (
                           <td
@@ -308,7 +356,7 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                                     className="p-0.5 hover:bg-gray-200 rounded disabled:opacity-20"
                                     title="Pindah atas"
                                   >
-                                    <ChevronUp className="w-3 h-3" />
+                                    <ChevronUp className="w-3.5 h-3.5" />
                                   </button>
                                   <button
                                     onClick={() => onMoveDay(dayIndex, 'down')}
@@ -316,7 +364,7 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                                     className="p-0.5 hover:bg-gray-200 rounded disabled:opacity-20"
                                     title="Pindah bawah"
                                   >
-                                    <ChevronDown className="w-3 h-3" />
+                                    <ChevronDown className="w-3.5 h-3.5" />
                                   </button>
                                 </div>
                               )}

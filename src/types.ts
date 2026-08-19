@@ -4,6 +4,7 @@ export interface TimeSlot {
   catatan?: string;
   menyerahkan?: string;
   menerima?: string;
+  expedisi?: string[]; // e.g. ['J&T', 'JNE', 'SPX', 'ID']
 }
 
 export interface DayData {
@@ -25,6 +26,8 @@ export interface DocumentConfig {
   year: number;
   senderTitle: string;
   receiverTitle: string;
+  expedisiTitle?: string;
+  expedisiList: string[]; // ['J&T', 'JNE', 'SPX', 'ID']
   defaultSlots: string[];
   showCompanyHeader: boolean;
   showFooterNotes: boolean;

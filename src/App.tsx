@@ -9,6 +9,7 @@ import { DayData, DocumentConfig } from './types';
 import { 
   MONTHS_ID, 
   DEFAULT_TIME_SLOTS, 
+  DEFAULT_EXPEDISI,
   generateDayData, 
   generateMonthData,
   createDefaultSlots
@@ -30,6 +31,8 @@ export default function App() {
       year: currentYear,
       senderTitle: 'TTD Yang Menyerahkan',
       receiverTitle: 'TTD Yang Menerima',
+      expedisiTitle: 'EKSPEDISI',
+      expedisiList: [...DEFAULT_EXPEDISI],
       defaultSlots: [...DEFAULT_TIME_SLOTS],
       showCompanyHeader: false,
       showFooterNotes: false,
@@ -112,7 +115,7 @@ export default function App() {
             isLibur: newIsLibur,
             keteranganLibur: newIsLibur ? 'LIBUR' : undefined,
             slots: newIsLibur
-              ? [{ id: `${day.id}-slot-libur`, waktu: 'LIBUR' }]
+              ? [{ id: `${day.id}-slot-libur`, waktu: 'LIBUR', expedisi: [] }]
               : createDefaultSlots(config.defaultSlots, day.id)
           };
         }
@@ -129,7 +132,8 @@ export default function App() {
           const newSlotNumber = day.slots.length + 1;
           const newSlot = {
             id: `${day.id}-slot-${newSlotNumber}-${Date.now()}`,
-            waktu: '16.00 - 17.00'
+            waktu: '16.00 - 17.00',
+            expedisi: []
           };
           return {
             ...day,
@@ -165,6 +169,31 @@ export default function App() {
           return {
             ...day,
             slots: day.slots.map(s => (s.id === slotId ? { ...s, waktu: newTime } : s))
+          };
+        }
+        return day;
+      })
+    );
+  };
+
+  // Toggle courier checked state on a slot
+  const handleToggleExpedisi = (dayId: string, slotId: string, courier: string) => {
+    setDaysData(prev =>
+      prev.map(day => {
+        if (day.id === dayId) {
+          return {
+            ...day,
+            slots: day.slots.map(s => {
+              if (s.id === slotId) {
+                const current = s.expedisi || [];
+                const isSelected = current.includes(courier);
+                const updated = isSelected
+                  ? current.filter(c => c !== courier)
+                  : [...current, courier];
+                return { ...s, expedisi: updated };
+              }
+              return s;
+            })
           };
         }
         return day;
@@ -216,7 +245,7 @@ export default function App() {
             ...day,
             isLibur: true,
             keteranganLibur: 'LIBUR',
-            slots: [{ id: `${day.id}-slot-libur`, waktu: 'LIBUR' }]
+            slots: [{ id: `${day.id}-slot-libur`, waktu: 'LIBUR', expedisi: [] }]
           };
         } else {
           return {
@@ -294,6 +323,7 @@ export default function App() {
             onAddSlotToDay={handleAddSlotToDay}
             onRemoveSlotFromDay={handleRemoveSlotFromDay}
             onUpdateSlotTime={handleUpdateSlotTime}
+            onToggleExpedisi={handleToggleExpedisi}
             onMoveDay={handleMoveDay}
             onGenerateMonth={handleGenerateMonth}
             onAddToday={handleAddToday}

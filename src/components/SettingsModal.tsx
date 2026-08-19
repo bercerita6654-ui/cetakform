@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { X, Plus, Trash2, Check, RotateCcw, Building2, Clock, FileText } from 'lucide-react';
+import { X, Plus, Trash2, Check, RotateCcw, Building2, Clock, FileText, Truck } from 'lucide-react';
 import { DocumentConfig } from '../types';
-import { DEFAULT_TIME_SLOTS } from '../utils/dateUtils';
+import { DEFAULT_TIME_SLOTS, DEFAULT_EXPEDISI } from '../utils/dateUtils';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -18,9 +18,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onSaveConfig,
   onApplySlotsToAllDays
 }) => {
-  const [formData, setFormData] = useState<DocumentConfig>({ ...config });
+  const [formData, setFormData] = useState<DocumentConfig>({ 
+    ...config,
+    expedisiList: config.expedisiList || [...DEFAULT_EXPEDISI]
+  });
   const [newSlotInput, setNewSlotInput] = useState('');
-  const [activeTab, setActiveTab] = useState<'slots' | 'headers' | 'notes'>('slots');
+  const [newExpedisiInput, setNewExpedisiInput] = useState('');
+  const [activeTab, setActiveTab] = useState<'slots' | 'headers' | 'expedisi' | 'notes'>('slots');
 
   if (!isOpen) return null;
 
@@ -46,6 +50,31 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     setFormData({
       ...formData,
       defaultSlots: [...DEFAULT_TIME_SLOTS]
+    });
+  };
+
+  const handleAddExpedisi = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newExpedisiInput.trim() && !formData.expedisiList.includes(newExpedisiInput.trim().toUpperCase())) {
+      setFormData({
+        ...formData,
+        expedisiList: [...formData.expedisiList, newExpedisiInput.trim().toUpperCase()]
+      });
+      setNewExpedisiInput('');
+    }
+  };
+
+  const handleRemoveExpedisi = (courier: string) => {
+    setFormData({
+      ...formData,
+      expedisiList: formData.expedisiList.filter(c => c !== courier)
+    });
+  };
+
+  const handleResetExpedisi = () => {
+    setFormData({
+      ...formData,
+      expedisiList: [...DEFAULT_EXPEDISI]
     });
   };
 
@@ -83,10 +112,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-[#E5E7EB] px-5 gap-4 text-xs font-bold bg-white">
+        <div className="flex border-b border-[#E5E7EB] px-5 gap-3 text-xs font-bold bg-white overflow-x-auto">
           <button
             onClick={() => setActiveTab('slots')}
-            className={`py-2.5 flex items-center gap-1.5 border-b-2 transition ${
+            className={`py-2.5 flex items-center gap-1.5 border-b-2 transition whitespace-nowrap ${
               activeTab === 'slots'
                 ? 'border-[#6366F1] text-[#6366F1]'
                 : 'border-transparent text-[#6B7280] hover:text-[#111827]'
@@ -97,7 +126,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </button>
           <button
             onClick={() => setActiveTab('headers')}
-            className={`py-2.5 flex items-center gap-1.5 border-b-2 transition ${
+            className={`py-2.5 flex items-center gap-1.5 border-b-2 transition whitespace-nowrap ${
               activeTab === 'headers'
                 ? 'border-[#6366F1] text-[#6366F1]'
                 : 'border-transparent text-[#6B7280] hover:text-[#111827]'
@@ -107,8 +136,19 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             Kop & Kolom TTD
           </button>
           <button
+            onClick={() => setActiveTab('expedisi')}
+            className={`py-2.5 flex items-center gap-1.5 border-b-2 transition whitespace-nowrap ${
+              activeTab === 'expedisi'
+                ? 'border-[#6366F1] text-[#6366F1]'
+                : 'border-transparent text-[#6B7280] hover:text-[#111827]'
+            }`}
+          >
+            <Truck className="w-3.5 h-3.5" />
+            Ekspedisi ({formData.expedisiList.length})
+          </button>
+          <button
             onClick={() => setActiveTab('notes')}
-            className={`py-2.5 flex items-center gap-1.5 border-b-2 transition ${
+            className={`py-2.5 flex items-center gap-1.5 border-b-2 transition whitespace-nowrap ${
               activeTab === 'notes'
                 ? 'border-[#6366F1] text-[#6366F1]'
                 : 'border-transparent text-[#6B7280] hover:text-[#111827]'
@@ -260,6 +300,62 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     </div>
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'expedisi' && (
+            <div className="space-y-3">
+              <div>
+                <label className="block text-[11px] font-bold text-[#6B7280] uppercase mb-1.5">
+                  Daftar Pilihan Ekspedisi:
+                </label>
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  {formData.expedisiList.map((courier) => (
+                    <div
+                      key={courier}
+                      className="flex items-center justify-between p-2 bg-[#F9FAFB] border border-[#E5E7EB] rounded font-bold text-xs"
+                    >
+                      <span className="text-blue-700">{courier}</span>
+                      <button
+                        onClick={() => handleRemoveExpedisi(courier)}
+                        className="text-red-500 hover:text-red-700 p-1 rounded"
+                        title="Hapus"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Add New Courier */}
+              <form onSubmit={handleAddExpedisi} className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Contoh: SICEPAT, NINJA"
+                  value={newExpedisiInput}
+                  onChange={(e) => setNewExpedisiInput(e.target.value)}
+                  className="flex-1 border border-[#D1D5DB] rounded px-2.5 py-1.5 text-xs font-semibold outline-none focus:ring-2 focus:ring-[#6366F1] uppercase"
+                />
+                <button
+                  type="submit"
+                  className="px-3 py-1.5 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded text-xs font-bold flex items-center gap-1"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Tambah
+                </button>
+              </form>
+
+              <div className="flex items-center justify-between pt-2 border-t border-[#E5E7EB]">
+                <button
+                  type="button"
+                  onClick={handleResetExpedisi}
+                  className="text-[11px] text-[#6B7280] hover:text-[#111827] flex items-center gap-1 font-semibold"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  Reset ke Standar (J&T, JNE, SPX, ID)
+                </button>
               </div>
             </div>
           )}
