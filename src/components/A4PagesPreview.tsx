@@ -56,7 +56,7 @@ export const A4PagesPreview: React.FC<A4PagesPreviewProps> = ({
         <div className="flex items-center gap-3">
           <button
             onClick={onBackToEditor}
-            className="px-3 py-1.5 bg-[#1F2937] hover:bg-[#374151] text-white rounded text-xs font-bold flex items-center gap-1.5 transition border border-gray-700"
+            className="px-3 py-1.5 bg-[#1F2937] hover:bg-[#374151] text-white rounded text-xs font-bold flex items-center gap-1.5 transition border border-gray-700 cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             Kembali ke Editor
@@ -75,7 +75,7 @@ export const A4PagesPreview: React.FC<A4PagesPreviewProps> = ({
           </p>
           <button
             onClick={onPrint}
-            className="px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] active:scale-98 text-white rounded text-xs font-bold flex items-center gap-1.5 shadow-md shadow-indigo-600/30 transition"
+            className="px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] active:scale-98 text-white rounded text-xs font-bold flex items-center gap-1.5 shadow-md shadow-indigo-600/30 transition cursor-pointer"
           >
             <Printer className="w-3.5 h-3.5" />
             Cetak Dokumen Sekarang (Ctrl + P)
@@ -137,9 +137,9 @@ export const A4PagesPreview: React.FC<A4PagesPreviewProps> = ({
                 <table className="w-full border-collapse border border-black text-[11px]">
                   <thead>
                     <tr className="bg-gray-50 font-bold text-center uppercase tracking-wider text-black">
-                      <th rowSpan={2} className="border border-black p-2 w-16 align-middle">Hari</th>
-                      <th rowSpan={2} className="border border-black p-2 w-24 align-middle">Tanggal</th>
-                      <th rowSpan={2} className="border border-black p-2 w-20 align-middle">Waktu</th>
+                      <th rowSpan={2} className="border border-black p-2 w-16 align-middle whitespace-nowrap">Hari</th>
+                      <th rowSpan={2} className="border border-black p-2 w-24 align-middle whitespace-nowrap">Tanggal</th>
+                      <th rowSpan={2} className="border border-black px-2 py-2 w-28 min-w-[105px] align-middle whitespace-nowrap">Waktu</th>
                       <th rowSpan={2} className="border border-black p-2 w-32 align-middle">{config.senderTitle}</th>
                       <th rowSpan={2} className="border border-black p-2 w-32 align-middle">{config.receiverTitle}</th>
                       <th colSpan={expedisiItems.length} className="border border-black p-1.5 bg-gray-200 text-black font-extrabold">
@@ -148,7 +148,7 @@ export const A4PagesPreview: React.FC<A4PagesPreviewProps> = ({
                     </tr>
                     <tr className="bg-gray-50 font-bold text-center uppercase tracking-wider text-black">
                       {expedisiItems.map(c => (
-                        <th key={c} className="border border-black p-1 w-11 text-[10px]">
+                        <th key={c} className="border border-black p-1 w-11 text-[10px] whitespace-nowrap">
                           {c}
                         </th>
                       ))}
@@ -162,14 +162,14 @@ export const A4PagesPreview: React.FC<A4PagesPreviewProps> = ({
                       if (isHoliday) {
                         return (
                           <tr key={day.id} className="border-b border-black bg-red-50/50">
-                            <td className="border border-black p-2 text-center align-middle font-bold text-red-600">
+                            <td className="border border-black p-2 text-center align-middle font-bold text-red-600 whitespace-nowrap">
                               {day.hari}
                             </td>
-                            <td className="border border-black p-2 text-center align-middle text-red-600 font-medium">
+                            <td className="border border-black p-2 text-center align-middle text-red-600 font-medium whitespace-nowrap">
                               {day.tanggal}
                             </td>
                             <td
-                              className="border border-black p-2 text-center font-black tracking-[0.2em] bg-red-500 text-white"
+                              className="border border-black p-2 text-center font-black tracking-[0.2em] bg-red-500 text-white whitespace-nowrap"
                               style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
                             >
                               {day.keteranganLibur || 'LIBUR'}
@@ -189,7 +189,7 @@ export const A4PagesPreview: React.FC<A4PagesPreviewProps> = ({
                             {expedisiItems.map(c => (
                               <td
                                 key={c}
-                                className="border border-black p-1 text-center font-bold text-[9px] bg-red-500 text-white"
+                                className="border border-black p-1 text-center font-bold text-[9px] bg-red-500 text-white whitespace-nowrap"
                                 style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
                               >
                                 LIBUR
@@ -205,19 +205,19 @@ export const A4PagesPreview: React.FC<A4PagesPreviewProps> = ({
                             <>
                               <td
                                 rowSpan={slotsCount}
-                                className="border border-black p-2 text-center align-middle font-bold text-[#111827] bg-white"
+                                className="border border-black p-2 text-center align-middle font-bold text-[#111827] bg-white whitespace-nowrap"
                               >
                                 {day.hari}
                               </td>
                               <td
                                 rowSpan={slotsCount}
-                                className="border border-black p-2 text-center align-middle text-[#374151] font-medium bg-white"
+                                className="border border-black p-2 text-center align-middle text-[#374151] font-medium bg-white whitespace-nowrap"
                               >
                                 {day.tanggal}
                               </td>
                             </>
                           )}
-                          <td className="border border-black p-1.5 text-center h-10 align-middle font-semibold text-[#111827]">
+                          <td className="border border-black px-1.5 py-1 text-center h-10 align-middle font-semibold text-[#111827] whitespace-nowrap text-[11px] font-mono tracking-tight">
                             {slot.waktu}
                           </td>
                           <td className="border border-black p-1.5 h-10"></td>
@@ -226,7 +226,7 @@ export const A4PagesPreview: React.FC<A4PagesPreviewProps> = ({
                           {expedisiItems.map(courier => (
                             <td
                               key={courier}
-                              className="border border-black p-1 text-center font-bold text-xs h-10 align-middle w-11"
+                              className="border border-black p-1 text-center font-bold text-xs h-10 align-middle w-11 font-mono"
                             >
                               {slot.expedisiQty?.[courier] || ''}
                             </td>

@@ -100,19 +100,19 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
             </tr>
             {/* Column Headers Row 1 */}
             <tr className="bg-gray-100 font-bold text-center text-black">
-              <th rowSpan={2} className="border border-black p-2 w-20 uppercase align-middle">
+              <th rowSpan={2} className="border border-black p-2 w-20 uppercase align-middle whitespace-nowrap">
                 Hari
               </th>
-              <th rowSpan={2} className="border border-black p-2 w-32 uppercase align-middle">
+              <th rowSpan={2} className="border border-black p-2 w-32 uppercase align-middle whitespace-nowrap">
                 Tanggal
               </th>
-              <th rowSpan={2} className="border border-black p-2 w-28 uppercase align-middle">
+              <th rowSpan={2} className="border border-black px-3 py-2 w-36 min-w-[130px] uppercase align-middle whitespace-nowrap">
                 Waktu
               </th>
-              <th rowSpan={2} className="border border-black p-2 w-40 uppercase align-middle">
+              <th rowSpan={2} className="border border-black p-2 w-36 uppercase align-middle">
                 {config.senderTitle}
               </th>
-              <th rowSpan={2} className="border border-black p-2 w-40 uppercase align-middle">
+              <th rowSpan={2} className="border border-black p-2 w-36 uppercase align-middle">
                 {config.receiverTitle}
               </th>
               {/* Group Header for Ekspedisi */}
@@ -131,7 +131,7 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
               {expedisiItems.map((courier) => (
                 <th
                   key={courier}
-                  className="border border-black p-1.5 text-center text-xs font-bold w-14 bg-gray-100"
+                  className="border border-black p-1.5 text-center text-xs font-bold w-14 bg-gray-100 whitespace-nowrap"
                 >
                   {courier}
                 </th>
@@ -183,15 +183,15 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                   {isHoliday ? (
                     /* SUNDAY / HOLIDAY ROW */
                     <tr className="bg-red-50 hover:bg-red-100/60 transition-colors">
-                      <td className="border border-black p-2 text-center align-middle font-bold text-red-600">
+                      <td className="border border-black p-2 text-center align-middle font-bold text-red-600 whitespace-nowrap">
                         {day.hari}
                       </td>
-                      <td className="border border-black p-2 text-center align-middle text-red-600 font-medium">
+                      <td className="border border-black p-2 text-center align-middle text-red-600 font-medium whitespace-nowrap">
                         {day.tanggal}
                       </td>
                       {/* Red LIBUR Columns across all operational columns */}
                       <td
-                        className="border border-black p-2 text-center font-bold tracking-widest text-white select-none"
+                        className="border border-black p-2 text-center font-bold tracking-widest text-white select-none whitespace-nowrap"
                         style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
                       >
                         {day.keteranganLibur || 'LIBUR'}
@@ -212,7 +212,7 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                       {expedisiItems.map((courier) => (
                         <td
                           key={courier}
-                          className="border border-black p-1 text-center font-bold text-xs tracking-wider text-white select-none"
+                          className="border border-black p-1 text-center font-bold text-xs tracking-wider text-white select-none whitespace-nowrap"
                           style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
                         >
                           LIBUR
@@ -225,14 +225,14 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                           <button
                             onClick={() => onToggleLibur(day.id)}
                             title="Ubah jadi Hari Kerja"
-                            className="text-emerald-700 hover:bg-emerald-50 p-1.5 rounded transition"
+                            className="text-emerald-700 hover:bg-emerald-50 p-1.5 rounded transition cursor-pointer"
                           >
                             <Briefcase className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => onRemoveDay(day.id)}
                             title="Hapus Hari"
-                            className="text-red-500 hover:bg-red-50 p-1.5 rounded transition"
+                            className="text-red-500 hover:bg-red-50 p-1.5 rounded transition cursor-pointer"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -248,7 +248,7 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                           <>
                             <td
                               rowSpan={slotsCount}
-                              className={`border border-black p-2 text-center align-middle font-bold text-gray-900 ${
+                              className={`border border-black p-2 text-center align-middle font-bold text-gray-900 whitespace-nowrap ${
                                 dayIndex % 2 === 1 ? 'bg-gray-50/40' : 'bg-white'
                               }`}
                             >
@@ -256,7 +256,7 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                             </td>
                             <td
                               rowSpan={slotsCount}
-                              className={`border border-black p-2 text-center align-middle text-gray-800 font-medium ${
+                              className={`border border-black p-2 text-center align-middle text-gray-800 font-medium whitespace-nowrap ${
                                 dayIndex % 2 === 1 ? 'bg-gray-50/40' : 'bg-white'
                               }`}
                             >
@@ -265,8 +265,8 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                           </>
                         )}
 
-                        {/* Waktu Slot Cell */}
-                        <td className="border border-black p-2 text-center h-12 align-middle text-gray-900">
+                        {/* Waktu Slot Cell - Always single line without wrapping */}
+                        <td className="border border-black px-2 py-1 text-center h-12 align-middle text-gray-900 whitespace-nowrap">
                           {editingSlotId === slot.id ? (
                             <div className="flex items-center gap-1">
                               <input
@@ -277,22 +277,24 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                                   if (e.key === 'Enter') handleSaveSlot(day.id, slot.id);
                                   if (e.key === 'Escape') setEditingSlotId(null);
                                 }}
-                                className="w-full text-xs font-bold p-1 border border-blue-500 rounded outline-none text-center bg-white shadow-xs"
+                                className="w-full text-xs font-bold p-1 border border-blue-500 rounded outline-none text-center bg-white shadow-xs whitespace-nowrap font-mono"
                                 autoFocus
                               />
                               <button
                                 onClick={() => handleSaveSlot(day.id, slot.id)}
-                                className="p-1 text-emerald-600 hover:bg-emerald-50 rounded"
+                                className="p-1 text-emerald-600 hover:bg-emerald-50 rounded cursor-pointer"
                               >
                                 <Check className="w-3.5 h-3.5" />
                               </button>
                             </div>
                           ) : (
                             <div className="group/slot flex items-center justify-center gap-1">
-                              <span className="font-medium text-xs sm:text-sm">{slot.waktu}</span>
+                              <span className="font-semibold text-xs sm:text-sm whitespace-nowrap tracking-tight font-mono text-gray-900">
+                                {slot.waktu}
+                              </span>
                               <button
                                 onClick={() => handleStartEditSlot(slot)}
-                                className="print-hidden opacity-0 group-hover/slot:opacity-100 text-gray-400 hover:text-blue-600 p-0.5 rounded transition"
+                                className="print-hidden opacity-0 group-hover/slot:opacity-100 text-gray-400 hover:text-blue-600 p-0.5 rounded transition cursor-pointer"
                                 title="Edit waktu"
                               >
                                 <Edit3 className="w-3 h-3" />
@@ -335,7 +337,7 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                                   onUpdateExpedisiQty(day.id, slot.id, courier, e.target.value)
                                 }
                                 placeholder=""
-                                className="w-full text-center text-xs font-bold outline-none bg-transparent hover:bg-blue-50/50 focus:bg-white focus:ring-1 focus:ring-blue-500 rounded py-1 transition text-gray-900"
+                                className="w-full text-center text-xs font-bold outline-none bg-transparent hover:bg-blue-50/50 focus:bg-white focus:ring-1 focus:ring-blue-500 rounded py-1 transition text-gray-900 font-mono"
                                 title={`Jumlah invoice/paket untuk ${courier}`}
                               />
                             </td>
@@ -352,21 +354,21 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                               <div className="flex items-center justify-center gap-0.5">
                                 <button
                                   onClick={() => onToggleLibur(day.id)}
-                                  className="text-amber-600 hover:bg-amber-100/60 p-1 rounded transition"
+                                  className="text-amber-600 hover:bg-amber-100/60 p-1 rounded transition cursor-pointer"
                                   title="Tandai Libur"
                                 >
                                   <Sun className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                   onClick={() => onAddSlotToDay(day.id)}
-                                  className="text-indigo-600 hover:bg-indigo-100/60 p-1 rounded transition"
+                                  className="text-indigo-600 hover:bg-indigo-100/60 p-1 rounded transition cursor-pointer"
                                   title="Tambah Slot Jam"
                                 >
                                   <Plus className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                   onClick={() => onRemoveDay(day.id)}
-                                  className="text-red-500 hover:bg-red-100/60 p-1 rounded transition"
+                                  className="text-red-500 hover:bg-red-100/60 p-1 rounded transition cursor-pointer"
                                   title="Hapus Hari"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
@@ -378,7 +380,7 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                                   <button
                                     onClick={() => onMoveDay(dayIndex, 'up')}
                                     disabled={dayIndex === 0}
-                                    className="p-0.5 hover:bg-gray-200 rounded disabled:opacity-20"
+                                    className="p-0.5 hover:bg-gray-200 rounded disabled:opacity-20 cursor-pointer"
                                     title="Pindah atas"
                                   >
                                     <ChevronUp className="w-3.5 h-3.5" />
@@ -386,7 +388,7 @@ export const InvoiceTable: React.FC<InvoiceTableProps> = ({
                                   <button
                                     onClick={() => onMoveDay(dayIndex, 'down')}
                                     disabled={dayIndex === daysData.length - 1}
-                                    className="p-0.5 hover:bg-gray-200 rounded disabled:opacity-20"
+                                    className="p-0.5 hover:bg-gray-200 rounded disabled:opacity-20 cursor-pointer"
                                     title="Pindah bawah"
                                   >
                                     <ChevronDown className="w-3.5 h-3.5" />
